@@ -1,0 +1,1294 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>State of JavaScript + React</title>
+
+    <link rel="stylesheet" href="css/reveal.css">
+    <link rel="stylesheet" href="css/theme/league.css"><!-- black, white, league (gray), beige, sky (blue), night, serif, simple (white), solarized -->
+
+    <!-- Theme used for syntax highlighting of code -->
+    <!-- link rel="stylesheet" href="lib/css/zenburn.css" -->
+    <link rel="stylesheet" href="lib/css/tomorrow-night-eighties.css">
+
+    <!-- Printing and PDF exports -->
+    <script>
+      var link = document.createElement( 'link' );
+      link.rel = 'stylesheet';
+      link.type = 'text/css';
+      link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+      document.getElementsByTagName( 'head' )[0].appendChild( link );
+    </script>
+
+
+    <style>
+      div.leftCol {
+        text-align: left;
+        float: left;
+      }
+
+      div.rightCol {
+        text-align: left;
+        float: right;
+      }
+
+      /* Disable all caps for some headings */
+      h2, h3, h4 { text-transform: none !important; }
+
+    /* To remove an element from taking up space */
+    .removeOnHide.fragment.visible:not(.current-fragment) {
+      display: none;
+      height:0px;
+      line-height: 0px;
+      font-size: 0px;
+    }
+
+    .leftAlign {
+      text-align: left;
+    }
+    </style>
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+
+<!--
+Transitions:  none/fade/slide/convex/concave/zoom
+To use fragments in markdown, surround them with  <script type="text/template"></script>
+To make it editable: contenteditable
+-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-transition="zoom-in convex-out">
+  <h1>State of JavaScript</h1>
+  <h1>+ React</h1>
+  <h3>(November 2016)</h3>
+  <aside class="notes" data-markdown>
+  _(A quick and short lunch-and-learn I presented to my team (mainly C# web developers) on November 2016.
+  It's old now, but posting it for my reference (except for demos).  Some references have been lost...
+  https://github.com/dusklight/javascript-react-2016/ )_
+  - Presse *ESC* to see all the slides in *Overview* mode.
+
+  - This presentation itself is a JavaScript "app", using ReavelJS.
+  </aside>
+</section>
+
+
+
+
+
+<section data-markdown data-transition="slide-in convex-out">
+  ##Topics
+  - A Little History
+  - Let's Review Some Basics
+  - Some Other Things
+  - ES5 New Features
+  - ES2015 New Features
+  - SPA
+  - Frameworks
+  - JavaScript Everywhere
+  - What is ReactJS
+  - JSX
+  - Flux and Redux
+  - Demo
+</section>
+
+
+
+
+
+
+
+
+
+<section>
+  <section data-markdown>
+    ## A Little History
+    - Created in 10 days in May 1995 by Brendan Eich for Netscape browser
+    - Mocha, LiveScript
+    - JavaScript – through licensing agreement with Sun
+    </script>
+  </section>
+  <section data-markdown>
+    ### ECMAScript
+    - JavaScript is an implementation of ECMAScript
+    - Conflicts and issues, until 2008 – decided to work as a group - “Harmony”
+    - ES5 (5th Edition) = 2009 - this is what we're using in our apps
+    - ES6 = ECMAScript 2015
+    - ES7 = ECMAScript 2016
+    - Browser support – by feature, not by edition/version
+      - http://kangax.github.io/compat-table/es5/
+  </section>
+</section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section>
+  <section data-markdown>
+    ## Let's Review Some Basics
+    - Objects
+    - Prototype
+    - Functional JavaScript
+  </section>
+
+  <section>
+    <h3>Objects</h3>
+    <ul>
+      <li>Not exactly the same as C# objects</li>
+      <li>Just containers of named values - properties and methods</li>
+    </ul>
+    <pre><code data-trim data-noescape class="js">
+// Using object literal to create an object
+var car = {
+    type: "Honda",
+    model: "Civic"
+};
+
+console.log(car.type); // Honda
+console.log(car["type"]); // Honda
+
+for (var propName in car) {
+  console.log (propName, car[propName]);
+}
+
+    </code></pre>
+    <aside class="notes" data-markdown>
+    - No classes until ES6
+    - Use for-in to loop through object properties
+    </aside>
+  </section>
+
+  <section>
+    <h3>Prototype</h3>
+    <pre><code data-trim data-noescape class="js">
+var car = {
+  wheels: 4
+}
+
+var truck = {
+  wheels: 8
+}
+
+var vehicle = {};
+
+vehicle.__proto__ = car;   // vehicle.wheels === 4
+vehicle.__proto__ = truck; // vehicle.wheels === 8
+
+vehicle.wheels = 2; // "overrides" the prototype value
+
+truck.color = "red";
+console.log(vehicle.color); // "red";
+    </code></pre>
+    <aside class="notes" data-markdown>
+      - Prototype lookups are dynamic
+      - \_\_proto\_\_ is ES6 feature
+      - Use Object.create() for older browsers
+      - http://sporto.github.io/blog/2013/02/22/a-plain-english-guide-to-javascript-prototypes/
+    </aside>
+  </section>
+  <section>
+    <h3>Prototype</h3>
+    <pre><code data-trim data-noescape class="js">
+function Car() {
+  this.color = "red";
+}
+
+var car = new Car();
+console.log(car.color); // "red"
+
+    </code></pre>
+    <div>is same as...</div>
+    <pre><code data-trim data-noescape class="js">
+function Car() {
+  var this = {}; // not valid, just for illustration
+  this.__proto__ = Car.prototype;
+
+  this.color = "red";
+
+  return this;
+}
+    </code></pre>
+    <aside class="notes" data-markdown>
+      - Functions used as constructors, "factories", creates new objects
+      - Must use "new".  If not, this will be a global object
+      - General convention is to capitalize the function name
+      - "Car.prototype": The function's prototype that will be assigned to the object created using "new"
+    </aside>
+  </section>
+
+  <section>
+    <h3>Functional JavaScript</h3>
+    <h4>Imperative</h4>
+    <pre><code data-trim data-noescape class="js">
+var result;
+function capWords(input) {
+  var counter;
+  var inputArray = input.split(" ");
+  var transformed = "";
+  result = [];
+  for (counter = 0; counter < inputArray.length; counter++) {
+    transformed = [
+      inputArray[counter].charAt(0).toUpperCase(),
+      inputArray[counter].substring(1)
+    ].join("");
+    result.push(transformed);
+  }
+};
+capWords("captialize these words");
+alert(result.join(" "));
+    </code></pre>
+    <aside class="notes" data-markdown>
+    - In JavaScript, you can mix and match imperative, OO, functional, prototypal - the choice is up to you.
+    - Functional means "functions as first-class" - put functions into a variable, and use it like one
+    - Code sample from: https://www.sitepoint.com/introduction-functional-javascript/, slightly modified.
+    </aside>
+  </section>
+
+  <section>
+    <h3>Functional JavaScript</h3>
+    <h4>Object Oriented</h4>
+    <pre><code data-trim data-noescape class="js">
+(function() {
+  var SomeText = function(text) { this.text = text; };
+  SomeText.prototype.capify = function(str) {
+    return [str.charAt(0).toUpperCase(), str.substring(1)].join("");
+  };
+  SomeText.prototype.capifyWords = function() {
+    var result = [];
+    var textArray = this.text.split(" ");
+    for (var counter = 0; counter < textArray.length; counter++) {
+      result.push(this.capify(textArray[counter]));
+    }
+    return result.join(" ");
+  };
+
+  var newText = new SomeText("captialize these words");
+  alert(newText.capifyWords());
+}());
+    </code></pre>
+  </section>
+
+  <section>
+    <h3>Functional JavaScript</h3>
+    <h4>Functional</h4>
+    <pre><code data-trim data-noescape class="js">
+(function() {
+  var capify = function(str) {
+    return [str.charAt(0).toUpperCase(), str.substring(1)].join("");
+  };
+  var processWords = function(fn, str) {
+    return str.split(" ").map(fn).join(" ");
+  };
+
+  alert(processWords(capify, "captialize these words"));
+}());
+    </code></pre>
+    <aside class="notes" data-markdown>
+    - Concise - only two functions defined
+    - They are pure
+      - No side-effects, and only depends on what's passed in
+      - Same result everytime with a given set of arguments
+      - Easy to test, easy to reuse.
+    - Some similarity with C# LINQ
+    </aside>
+  </section>
+
+</section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section>
+
+  <section>
+    <h2>Some Other Things To Know</h2>
+    <ul>
+      <li>Strict Equality (===)</li>
+      <li>Block Scope</li>
+      <li>IIFE ("iffy") - Immediately-Invoked Function Expression</li>
+    </ul>
+  </section>
+
+
+
+  <section>
+    <h3>Strict Equality</h3>
+    <pre><code data-trim data-noescape class="js">
+console.log(3 ==  "3"); // true. Abstract forces type conversion
+console.log(3 === "3"); // false
+
+console.log(true ==  "1"); // true
+console.log(true === "1"); // false
+
+console.log(true ==  1); // true
+console.log(true === 1); // false
+
+console.log(undefined ==  null); // true
+console.log(undefined === null); // false
+
+console.log(true ==  "true"); // false
+console.log(true === "true"); // false
+    </code></pre>
+    <aside class="notes" data-markdown>
+      - Abstract equality vs Strict equality
+      - Almost always, use ===
+    </aside>
+  </section>
+
+
+
+
+
+
+  <section>
+    <h3>Block Scope</h3>
+    <pre><code data-trim data-noescape class="js">
+var carName = "Honda"; // global variable
+
+function foo() {
+  bar = "Global"; // automatic global variable
+
+  if (carName === "Honda") {
+    var model = "Civic";
+  }
+  for (var i = 0; i < 5; i++) {
+    var y = i;
+  }
+
+  console.log(model, i, y); // model, i, y still accessible
+}
+
+console.log(bar); // bar is global
+    </code></pre>
+    <aside class="notes" data-markdown>
+      - No block scoping, but has functional scoping.
+      - Automatic global variables
+    </aside>
+  </section>
+
+  <section>
+    <h3>IIFE</h3>
+    <pre><code data-trim data-noescape class="js">
+(function() {
+  // code
+})();
+    </code></pre>
+    <ul>
+      <li>All variable are "private" to the function, does not leak out to global space</li>
+      <li>Function expression, not a declaration</li>
+        <div>e.g., var f = function() { ... }</div>
+      <li>Code inside () considered expression</li>
+      <li>Expression returns a value, in this case, the function itself</li>
+      <li>Not named</li>
+    </ul>
+  </section>
+
+
+  <section>
+    <h3>IIFE</h3>
+    <div>Use it to overcome lack of block scoping when using closures inside a loop</div>
+      <pre><code data-trim data-noescape class="js">
+var result = [];
+for (var i=0; i < 5; i++) {
+  result.push(function () { return i });
+}
+console.log(result[1]()); // 5
+console.log(result[3]()); // 5
+      </code></pre>
+      <div>Use this instead:</div>
+      <pre><code data-trim data-noescape class="js">
+for (var i=0; i < 5; i++) {
+    (function () {
+        var i2 = i; // copy current i
+        result.push(function () { return i2 });
+    }());
+}
+      </code></pre>
+      <aside class="notes" data-markdown>
+        - https://books.google.com/books?id=qU3rAgAAQBAJ (Speaking JavaScript book)
+      </aside>
+  </section>
+
+  <section>
+    <h3>IIFE</h3>
+    <div>Create private variables</div>
+      <pre><code data-trim data-noescape class="js">
+var counter = (function () {
+    var i = 0;
+
+    return {
+        increment: function () {
+          return ++i;
+        }
+    };
+})();
+
+counter.increment();
+counter.i; // undefined.
+      </code></pre>
+      <aside class="notes" data-markdown>
+        - http://benalman.com/news/2010/11/immediately-invoked-function-expression/
+      </aside>
+  </section>
+
+</section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section>
+  <section data-markdown>
+    <script type="text/template">
+    ## Some of new features in ES5
+    - Strict Mode
+    - Legal trailing commas
+    - Array.prototype: forEach(), map(), reduce(), etc
+    - Accessors
+    - Use reserved words as property keys
+    - Multiline string literals
+    - Object: create(), seal(), etc
+    - Native JSON handling
+    </script>
+  </section>
+
+  <section>
+    <h2>ES5: Strict Mode</h2>
+    <ul>
+      <li>"use strict";</li>
+      <li>VB Option Explicit?</li>
+      <li>Ignored if the browser doesn't support it</li>
+      <li>Variables must be declared</li>
+      <li>Can't use local variable name as the parameter name</li>
+      <li>"this" is undefined in non-method functions</li>
+      <li>No octal numbers</li>
+      <li>eval does not leak variables</li>
+    </ul>
+  </section>
+
+  <section>
+    <h3>Without Strict Mode</h3>
+    <pre><code data-trim data-noescape class="js">
+function noStrictFunction() {
+  globalVariable = "Test"; // Global variable created
+  glovalVariable.length = 100; // Silent failure
+}
+
+function Person(name) {
+  this.name = name; // "this" in non-method functions is "window"
+}
+var user = Person("Picard"); // Global variable created for "name"
+
+console.log(010); // 8 (Octal number)
+
+function test() {
+  var x = 1;
+  eval("var y = x + 1;"); // y is now available outside of the eval
+}
+    </code></pre>
+  </section>
+
+  <section>
+    <h3>ES5: Legal trailing commas</h3>
+    <pre><code data-trim data-noescape class="js">
+var shape = {
+  width: 100,
+  height: 200<mark>,</mark>
+}
+
+var count = [0, 1, 2, 3<mark>,</mark>];
+    </code></pre>
+    <aside class="notes" data-markdown>
+      - Makes adding and deleting items easier
+      - Good for "compare history", since it doesn't modify other lines.
+      - Good for code generators
+      - C# has it too!
+    </aside>
+  </section>
+
+  <section>
+    <h3>ES5: Array.prototype: forEach(), map(), etc</h3>
+    <pre><code data-trim data-noescape  class="js">
+var a = [1, 2, 3, 4];
+
+a.forEach(function(element) {
+  console.log(element);
+});
+
+var doubled = a.map(function(element){
+  return element * 2;
+})
+
+var sum = a.reduce(function(previous, current) {
+  return previous + current;
+}, 0);
+
+var even = a.filter(function(element) {
+  return element % 2 === 0;
+});
+    </code></pre>
+    <aside class="notes" data-markdown>
+    - In C# LINQ, map = Select, reduce = Aggregate, filter = Where
+    - There are many more. https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array
+    </aside>
+  </section>
+
+</section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section>
+  <section>
+  <h2>Some of new features in ES2015 (ES6)</h2>
+  <ul>
+    <li>Arrow functions</li>
+    <li>let &amp; const</li>
+    <li>Template Literals</li>
+    <li>for-of</li>
+    <li>Destructuring</li>
+    <li>Spread</li>
+    <li>Parameter default values</li>
+    <li>Classes</li>
+    <li>Module support</li>
+  </ul>
+  <aside class="notes" data-markdown>
+    - http://exploringjs.com/es6/ch_core-features.html#ch_core-features
+  </aside>
+  </section>
+
+  <section>
+    <h3>ES2015 Example</h3>
+    <pre><code data-trim data-noescape class="js">
+const redCar = { wheels: 4, color: "red" }; // const
+
+function whatCar( {wheels, color} ) { // destructuring
+  if (color === "red") {
+    let result = `Red car with ${wheels} wheels`; // let, template literal
+    return result;
+  } else {
+    return "Unknown car";
+  }
+}
+
+console.log( whatCar(redCar) ); // "Red car with 4 wheels"
+
+let { wheels } = redCar; // destructuring
+console.log( wheels ); // 4
+
+const blueCar = { ...redCar, color: "blue" }; // spread
+console.log ( blueCar ); // { color: "blue", wheels: 4 }
+
+const numbers = [1, 2, 3];
+let doubled = numbers.map( n => n * 2); // arrow functions, not demonstrated
+                                        // here but it keeps "this" scope
+
+for (let n of doubled) { // for-of
+  console.log(n); // 2, 4, 6
+};
+console.log(n); // Error: n is not defined.
+
+redCar.wheels = 6; // OK
+redCar = blueCar; // Error: "redCar" is read-only
+    </code></pre>
+    <aside class="notes" data-markdown>
+    </aside>
+  </section>
+</section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section>
+
+  <section data-markdown>
+    <script type="text/template">
+      ## SPA - JavaScript *Revolution*
+      - SPA: Single Page Application
+        - Client-side application
+        - "Web page" becomes "web application"
+      - Made possible by XMLHttpRequest <!-- .element: class="fragment" data-fragment-index="1" -->
+        - aka, AJAX (Asynchronous JavaScript and XML) <!-- .element: class="fragment" data-fragment-index="1" -->
+        - Originally created by Microsoft to support Outlook Web Access in 2000 <!-- .element: class="fragment" data-fragment-index="2" -->
+      - Ever increasing browser's performance <!-- .element: class="fragment" data-fragment-index="3" -->
+    </script>
+  </section>
+
+  <section>
+    <h3>SPA Architecture</h3>
+    <div class="removeOnHide fragment current-visible"><img src="images/spa/spa_1.png" /><div>Traditional Full-Page Postback</div></div>
+    <div class="removeOnHide fragment current-visible"><img src="images/spa/spa_2.png" /><div>AJAX Partial Rendering</div></div>
+    <div class="removeOnHide fragment current-visible"><img src="images/spa/spa_3.png" /><div>Single Page Application</div></div>
+    <div class="removeOnHide fragment current-visible"><img src="images/spa/spa_lifecycle_1.jpg" /><div></div></div>
+    <div class="removeOnHide fragment current-visible"><img src="images/spa/spa_lifecycle_2.jpg" /><div></div></div>
+    <aside class="notes" data-markdown>
+      - Diagrams from: https://blog.4psa.com/an-intro-into-single-page-applications-spa/, http://www.c-sharpcorner.com/uploadfile/rahul4_saxena/single-page-application-spa-using-angularjs-web-api-and-m/
+    </aside>
+  </section>
+
+  <section data-markdown>
+    ## Server-side
+    - Just becomes an API back-end
+      - Can be used by any client
+    - Not locked down to one technology
+      - Use .Net WebAPI, NodeJS, Java, etc
+  </section>
+
+  <section data-markdown>
+    ### What were some problems with SPA?
+    - Back button doesn't work - lack of history
+    - Not bookmarkable
+    - No SEO / Initial Page Load
+
+    All solved
+  </section>
+
+</section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section>
+
+  <section data-markdown>
+    ## Framework Explosion
+  </section>
+
+  <section data-markdown>
+    <script type="text/template">
+    ### Building in Plain Vanilla JS is hard
+    - Many frameworks created to help building the client-side application
+      - more still being created...
+    - jQuery
+      - One of the first very popular framework
+      - DOM manipulation, plugins
+      - No longer cool to use it..!? <!-- .element: class="fragment" data-fragment-index="1" -->
+    </script>
+  </section>
+
+  <section data-markdown>
+    ### Client-side MVC/MVVM/etc fraemworks
+    - AngularJS
+    - BackboneJS
+    - EmberJS
+    - KnockoutJS
+    - ReactJS
+    - http://todomvc.com/
+  </section>
+
+
+  <section>
+    <h3>AngularJS Quick Example</h3>
+    Angular Template, Component, HTML:
+
+    <pre style="font-size: 45%"><code data-trim data-noescape class="html">
+&lt;ul&gt;
+  &lt;li ng-repeat="phone in $ctrl.phones"&gt;
+    &lt;div&gt;{{phone.name}}&lt;/div&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+    </code></pre>
+
+    <pre style="font-size: 45%"><code data-trim data-noescape class="js">
+angular.module('phoneCategoriesApp').
+  component('phoneList', {
+    template: 'phone-list/phone-list.template.html',
+    controller: function PhoneListController() {
+      this.phones = [ /* list of phones here */ ];
+    }
+    </code></pre>
+
+    <pre style="font-size: 45%"><code data-trim data-noescape class="html">
+&lt;html ng-app="phonecatApp"&gt;
+&lt;head&gt;...&lt;/head&gt;
+&lt;body&gt;
+  &lt;!-- Use a custom component to render a list of phones --&gt;
+  &lt;phone-list&gt;&lt;/phone-list&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+    </code></pre>
+    <aside class="notes" data-markdown>
+    - Client-side MVC
+    - Uses "directives"
+    - Two way binding
+    </aside>
+  </section>
+
+
+
+
+
+  <section data-markdown>
+    ### Can We Improve JavaScript Language?
+    - CoffeeScript
+      - Influenced ES6
+    - TypeScript (Microsoft)
+    - Closure (Google)
+    - Flow JS (Facebook)
+    - Elm
+  </section>
+
+  <section>
+    <h3>TypeScript</h3>
+    <pre><code data-trim data-noescape class="ts">
+class Student {
+    fullName: string;
+    constructor(public firstName, public middleInitial, public lastName) {
+        this.fullName = firstName + " " + middleInitial + " " + lastName;
+    }
+}
+
+interface Person {
+    firstName: string;
+    lastName: string;
+}
+
+function greeter(person : Person) {
+    return "Hello, " + person.firstName + " " + person.lastName;
+}
+
+var user = new Student("Jane", "M.", "User");
+    </code></pre>
+    <aside class="notes" data-markdown>
+    - Plain JavaScript can be in the TypeScript file
+    - Types, interfaces, classes
+    - Compiles to JavaScript
+    - Flow JS has similar classes
+    - AngularJS 2 uses TypeScript
+    </aside>
+  </section>
+
+  <section data-markdown>
+    ### How to support older browsers?
+    - Use Transpilers
+    - One of the popular one is BabelJS
+    - http://babeljs.io/
+      - BabelJS Demo
+  </section>
+
+</section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section>
+  <section data-markdown>
+    ## JavaScript Everywhere
+    ### "learn once and run everywhere"
+  </section>
+
+  <section data-markdown class="leftAlign">
+    <script type="text/template">
+      ### Client-side:
+      - Browser
+
+      ### Can we use it on the server-side, too? <!-- .element: class="fragment" data-fragment-index="1" -->
+      - Node.js <!-- .element: class="fragment" data-fragment-index="1" -->
+      - Benefits: <!-- .element: class="fragment" data-fragment-index="1" -->
+        - Run same code on the client and on the server, such as validation. <!-- .element: class="fragment" data-fragment-index="1" -->
+
+      ### How about database? <!-- .element: class="fragment" data-fragment-index="2" -->
+      - MongoDB <!-- .element: class="fragment" data-fragment-index="2" -->
+    </script>
+  </section>
+
+  <section data-markdown>
+    ### JavaScript Engines
+    - Competitive nature of different browsers fighting for speed produced fast JavaScript engines
+    - V8 (Chrome - Google)
+    - ChakraCore (Edge - Microsoft)
+    - JavaScriptCore (Safari - Apple)
+  </section>
+
+  <section data-markdown>
+    ### Node JS
+    - A way to execute JavaScript, _outside of browser_
+    - Made possible by V8
+    - NPM Package Manager
+    - Async
+    - Express
+  </section>
+
+  <section data-markdown>
+    ### How about the phone?
+    - Apache Cordova (PhoneGap)
+    - React Native
+  </section>
+
+  <section data-markdown>
+    ### Desktop?
+    - Made possible by V8
+    - Electron (Github)
+    - NW.js
+  </section>
+
+
+</section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-transition="zoom-in convex-out">
+  <h1>ReactJS</h1>
+</section>
+
+
+
+
+
+
+
+<section>
+
+  <section>
+    <h2>What is ReactJS?</h2>
+    <ul>
+      <li>JavaScript library for creating UI components</li>
+        <ul>
+          <li>"Comparable" to the "V" in MVC</li>
+          <li>UI as a function of application state</li>
+        </ul>
+      <li class="fragment" data-fragment-index="1">Built by Facebook</li>
+        <ul class="fragment" data-fragment-index="1">
+          <li>Open-sourced in May 2014</li>
+          <li>Quickly gained popularity</li>
+      </ul>
+      <li class="fragment" data-fragment-index="2">Who uses React?</li>
+      <img class="fragment" data-fragment-index="3" src="images/react/logos.png" />
+    </ul>
+  </section>
+
+
+  <section data-markdown>
+    ### Why ReactJS?
+    - Component based
+      - Easy to unit test components
+    - Does not prescribe a framework
+      - MVC optional
+      - Facebook created Flux architecture
+    - Technical features
+      - Virtual DOM, JSX, Isomorphic, etc
+    - Uni-directional flow
+    - Functional programming
+  </section>
+
+  <section>
+    <h3>Why ReactJS?</h3>
+    <h4>Component and Composition</h4>
+    <div><img src="images/react/component1.png" class="removeOnHide fragment current-visible" data-fragment-index="1" /></div>
+    <div><img src="images/react/component2.png" class="removeOnHide fragment current-visible" data-fragment-index="2" /><br/>
+      <span style="color: red;" class="fragment current-visible" data-fragment-index="2">ContentLabel</span>&nbsp;
+      <span style="color: green;" class="fragment current-visible" data-fragment-index="2">AmountInput</span><br />
+      <span style="color: purple;" class="fragment current-visible" data-fragment-index="2">FundingAccountSelect</span>&nbsp;
+      <span style="color: blue;" class="fragment current-visible" data-fragment-index="2">BillPayInput</span>&nbsp;
+    </div>
+  </section>
+
+  <section>
+    <h3>Uni-directional Data binding</h3>
+    <ul>
+      <li>No logic required for updating multiple components when store changes (redux)</li>
+    </ul>
+    <div><img src="images/react/databinding.png" /></div>
+  </section>
+
+
+  <section data-markdown>
+    ### Why ReactJS?
+    - Healthy eco-system
+      - Many libraries for UI, Forms, etc.
+    - Good community
+    - Good debugging tools
+    - Any platform
+      - Web and Mobile Web
+      - Mobile Native with React Native
+      - Desktop Native with Electron
+  </section>
+
+
+</section>
+
+<section>
+  <section data-markdown>
+    ## JSX
+    - DSL (Domain Specific Language) for React
+    - Paradigm Shift
+      - JavaScript over html
+      - Not JavaScript in HTML (e.g., AngularJS)
+    - React components are pure JavaScript
+  </section>
+
+  <section>
+    <h3>JSX Example</h3>
+    <pre><code data-trim data-noescape class="js">
+render() {
+  return (
+    &lt;div className="form-group"&gt;
+
+      &lt;ContentLabel className="col-sm-2 control-label"
+                       labelText={this.props.labelText} /&gt;
+
+      &lt;div className="col-sm-3"&gt;
+        &lt;div class="input-group"&gt;
+          &lt;div class="input-group-addon"&gt;$&lt;/div&gt;
+          &lt;input className="form-control" type="text"
+            value={this.props.amount}
+            onChange={this.amountChanged} /&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  )}
+    </code></pre>
+    <aside class="notes" data-markdown>
+      - Optional
+      - Looks like HTML, but it's full JavaScript
+      - Lintable
+      - Try it out on Babel
+    </aside>
+    </section>
+ </section>
+
+
+
+
+
+
+
+<section>
+  <section>
+    <h2>Flux and Redux</h2>
+    <ul>
+      <li>Flux</li>
+      <ul>
+        <li>Architecture created by Facebook</li>
+        <li>Similar to CQRS pattern</li>
+        <li>In MVC, a model is both updated and queried by the controller.  In Flux, the data from Store is read-only</li>
+        <li>Both flux and redux can be use with other frameworks
+      </ul>
+    </ul>
+    <div><img src="images/react/flux-simple.png" /></div>
+  </section>
+
+
+  <section>
+    <h3>Redux</h3>
+    <ul>
+      <li>Improvements over Flux</li>
+      <ul>
+        <li>Single Store to minimize complexity</li>
+        <li>Single source of truth</li>
+        <li>Makes server rendering easier</li>
+        <li>Event sourcing allows time travel</li>
+      </ul>
+    </ul>
+    <div><img src="images/react/redux.png" /></div>
+  </section>
+
+</section>
+
+
+
+
+
+
+
+
+
+
+
+<section data-transition="zoom">
+  <h1>Demo</h1>
+</section>
+
+
+
+
+
+
+
+<section>
+  <h2>See also...</h2>
+  <ul>
+    <li>WebSockets, WebAssembly, WebComponents</li>
+    <li>asm.js, Linting, Bundling</li>
+    <li>Hot Loading, Async, Promises, etc.</li>
+  </ul>
+  <h3>Gotcha's:</h3>
+  <ul>
+    <li>Optional semicolon and minification</li>
+    <li>Implicit semicolon on return, etc.</li>
+  </ul>
+</section>
+
+
+
+
+
+      </div>
+    </div>
+
+    <a href="https://github.com/dusklight/javascript-react-2016"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/a6677b08c955af8400f44c6298f40e7d19cc5b2d/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677261795f3664366436642e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png"></a>
+
+    <script src="lib/js/head.min.js"></script>
+    <script src="js/reveal.js"></script>
+
+    <script>
+      // More info https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        showNotes: true,
+        slideNumber: true,
+        history: true,
+
+        // More info https://github.com/hakimel/reveal.js#dependencies
+        dependencies: [
+          { src: 'plugin/markdown/marked.js' },
+          { src: 'plugin/markdown/markdown.js' },
+          { src: 'plugin/notes/notes.js', async: true },
+          { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
+        ],
+      });
+
+      Reveal.addEventListener( 'ready', function( event ) {
+        Reveal.toggleOverview();
+      });
+    </script>
+  </body>
+</html>
